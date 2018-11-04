@@ -2,7 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="dc17ec16-b795-43b6-a3f3-b7d06c6762ea" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/src/com/company/Main.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/src/BaselineLearner.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/src/Json.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/src/Main.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/src/Matrix.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/src/SupervisedLearner.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/src/Vec.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/src/build.bash" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -17,8 +24,8 @@
       <file leaf-file-name="Main.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/company/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="85">
-              <caret line="5" column="31" lean-forward="false" selection-start-line="5" selection-start-column="31" selection-end-line="5" selection-end-column="31" />
+            <state relative-caret-position="136">
+              <caret line="8" column="0" lean-forward="true" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
               <folding>
                 <element signature="e#86#87#0" expanded="true" />
                 <element signature="e#127#128#0" expanded="true" />
@@ -83,12 +90,6 @@
               <item name="RandomForest" type="b2602c69:ProjectViewProjectNode" />
               <item name="RandomForest" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="RandomForest" type="b2602c69:ProjectViewProjectNode" />
-              <item name="RandomForest" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="company" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -165,12 +166,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1541368501933</updated>
-      <workItem from="1541368503470" duration="72000" />
+      <workItem from="1541368503470" duration="256000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="72000" />
+    <option name="totallyTimeSpent" value="256000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="877" extended-state="6" />
@@ -218,8 +219,8 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/com/company/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="5" column="31" lean-forward="false" selection-start-line="5" selection-start-column="31" selection-end-line="5" selection-end-column="31" />
+        <state relative-caret-position="136">
+          <caret line="8" column="0" lean-forward="true" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
           <folding>
             <element signature="e#86#87#0" expanded="true" />
             <element signature="e#127#128#0" expanded="true" />
