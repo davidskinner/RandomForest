@@ -45,14 +45,10 @@ class LeafNode extends Node
 {
 	public double[] label;
 
-	double[] getLabel()
-	{
-		return label;
-	}
-
 	LeafNode(Matrix labels)
 	{
 		label = new double[labels.cols()];
+
 		for (int i = 0; i < labels.cols(); i++)
 		{
 			if (labels.valueCount(i) == 0)
@@ -60,6 +56,11 @@ class LeafNode extends Node
 			else
 				label[i] = labels.mostCommonValue(i);
 		}
+	}
+
+	double[] getLabel()
+	{
+		return label;
 	}
 
 	boolean isLeaf()
@@ -70,22 +71,21 @@ class LeafNode extends Node
 
 class DecisionTree extends SupervisedLearner
 {
+	static Random rand = new Random(52);
 	Node root;
-	Matrix feat1;
+	Matrix DecisionFeature = new Matrix();
 
-
-	int pickDividingColumn(Matrix feat, Matrix lab, Random rand)
+	int pickDividingColumn(Matrix feat)
 	{
 		//pick a random column to divide on
-		int columnToDivideOn = rand.nextInt(feat.cols());
-		return columnToDivideOn;
+		return rand.nextInt(feat.cols());
 	}
 
-	double pickPivot(Matrix feat, Matrix lab, Random rand, int col)
+	double pickPivotRow(Matrix feat, int col)
 	{
+		//pick a random row to divide on
 		int row = rand.nextInt(feat.rows());
-		double pivot = feat.row(row)[col];
-		return pivot;
+		return feat.row(row)[col];
 	}
 
 	String name()
@@ -93,93 +93,112 @@ class DecisionTree extends SupervisedLearner
 		return "DecisionTree";
 	}
 
-	Node build_tree(Matrix feat, Matrix lab)
+	Node build_tree(Matrix ftrs, Matrix lbls)
 	{
+		//hang on to this for later
+		// DecisionFeature = new Matrix(ftrs);
 
-		feat1 = new Matrix(feat);
-		Random rand = new Random();
-
-		if (feat.rows() != lab.rows())
+		if (ftrs.rows() != lbls.rows())
 			throw new RuntimeException("mismatching features and labels");
 
-		feat1 = new Matrix(feat);
+		//initialize features and labels matrices
+		Matrix featuresA = new Matrix();
+		Matrix featuresB = new Matrix();
+		Matrix labelsA = new Matrix();
+		Matrix labelsB = new Matrix();
 
-		Matrix feat_a = new Matrix();
-		Matrix feat_b = new Matrix();
-		Matrix lab_a = new Matrix();
-		Matrix lab_b = new Matrix();
+		//initialize temp variables/ copies of the passed
+		// in features and labels outside of loop
+		Matrix featTemp = new Matrix();
+		Matrix labTemp = new Matrix();
 
-		Matrix featCopy = new Matrix(feat);
-		Matrix labCopy = new Matrix(lab);
-
-		int col = 0;
+		//col
+		int column = 0;
 		double pivot = 0;
 
-		for (int patience = 9; patience > 0; patience--)
+		for (int patience = 12; patience > 0; patience--)
 		{
-			col = pickDividingColumn(feat, lab, rand);
-			pivot = pickPivot(feat, lab, rand, col);
+			column = pickDividingColumn(ftrs);
+			pivot = pickPivotRow(ftrs, column);
 
-			int codeValue = feat.valueCount(col);
+			int codeValue = ftrs.valueCount(column);
 
-			feat_a = new Matrix(feat);
-			feat_b = new Matrix(feat);
-			lab_a = new Matrix(lab);
-			lab_b = new Matrix(lab);
+			featuresA = new Matrix(ftrs);
+			featuresB = new Matrix(ftrs);
+			labelsA = new Matrix(lbls);
+			labelsB = new Matrix(lbls);
 
-			feat_a.copyMetaData(feat);
-			feat_b.copyMetaData(feat);
-			lab_a.copyMetaData(lab);
-			lab_b.copyMetaData(lab);
+			featuresA.copyMetaData(ftrs);
+			featuresB.copyMetaData(ftrs);
+			labelsA.copyMetaData(lbls);
+			labelsB.copyMetaData(lbls);
 
-			featCopy.copy(feat);
-			labCopy.copy(lab);
+			featTemp.copy(ftrs);
+			labTemp.copy(lbls);
 
-			for (int i = 0; i < feat.rows(); i++) // while
+			int zerothPosition = 0;
+
+			while (featTemp.rows() != 0)
 			{
+//				Main.log(Integer.toString(featTemp.rows()));
 				//if the data is continuous
 				if (codeValue == 0)
 				{
-					if (feat.row(i)[col] < pivot)
+					if (ftrs.row(zerothPosition)[column] < pivot)
 					{
-						feat_a.takeRow(feat.removeRow(i));
-						lab_a.takeRow(lab.removeRow(i));
+						featuresA.takeRow(featTemp.removeRow(zerothPosition));
+						labelsA.takeRow(labTemp.removeRow(zerothPosition));
+
+//						Vec.copy(featuresA.newRow(), featTemp.row(zerothPosition));
+//						Vec.copy(labelsA.newRow(), labTemp.row(zerothPosition));
+
 					} else
 					{
-						feat_b.takeRow(feat.removeRow(i));
-						lab_b.takeRow(lab.removeRow(i));
+						featuresB.takeRow(featTemp.removeRow(zerothPosition));
+						labelsB.takeRow(labTemp.removeRow(zerothPosition));
+
+//						Vec.copy(featuresB.newRow(), featTemp.row(zerothPosition));
+//						Vec.copy(labelsB.newRow(), labTemp.row(zerothPosition));
 					}
-				} else                    //if the data is categorical
+				} else //if the data is categorical
 				{
-					if (feat.row(i)[col] == pivot)
+					if (ftrs.row(zerothPosition)[column] == pivot)
 					{
-						feat_a.takeRow(feat.removeRow(i));
-						lab_a.takeRow(lab.removeRow(i));
+						featuresA.takeRow(featTemp.removeRow(zerothPosition));
+						labelsA.takeRow(labTemp.removeRow(zerothPosition));
+
+//						Vec.copy(featuresA.newRow(), featTemp.row(zerothPosition));
+//						Vec.copy(labelsA.newRow(), labTemp.row(zerothPosition));
 					} else
 					{
-						feat_b.takeRow(feat.removeRow(i));
-						lab_b.takeRow(lab.removeRow(i));
+						featuresB.takeRow(featTemp.removeRow(zerothPosition));
+						labelsB.takeRow(labTemp.removeRow(zerothPosition));
+
+//						Vec.copy(featuresB.newRow(), featTemp.row(zerothPosition));
+//						Vec.copy(labelsB.newRow(), labTemp.row(zerothPosition));
 					}
 				}
 			}
-			if (feat_a.rows() != 0 || feat_b.rows() != 0)
+
+			if (featuresA.rows() != 0 && featuresB.rows() != 0)
 				break;
 		}
 
-		if (feat_a.rows() == 0 || feat_b.rows() == 0)
+		if (featuresA.rows() == 0 || featuresB.rows() == 0)
 		{
-			return new LeafNode(lab);
+			return new LeafNode(lbls);
 		}
 
 		//make the node
-		Node a = build_tree(feat_a, lab_a);
-		Node b = build_tree(feat_b, lab_b);
-		return new InteriorNode(a, b, col, pivot);
+		Node a = build_tree(featuresA, labelsA);
+		Node b = build_tree(featuresB, labelsB);
+		return new InteriorNode(a, b, column, pivot);
 	}
 
 
 	void train(Matrix feat, Matrix lab)
 	{
+		DecisionFeature = new Matrix(feat);
 		root = build_tree(feat, lab);
 	}
 
@@ -192,10 +211,10 @@ class DecisionTree extends SupervisedLearner
 			//if n is not a leaf node then branch
 			if (!n.isLeaf())
 			{
-				if (feat1.valueCount(n.attribute) == 0)
+				if (DecisionFeature.valueCount(n.attribute) == 0)
 				{
 					//if  continuous
-					if (in[n.attribute] <= n.pivot)
+					if (in[n.attribute] < n.pivot)
 					{
 						n = n.a;
 
@@ -217,12 +236,9 @@ class DecisionTree extends SupervisedLearner
 				{
 					out[i] = n.getLabel()[i];
 				}
-
 				//break after copying leaf node
 				break;
 			}
 		}
-
 	}
-
 }
