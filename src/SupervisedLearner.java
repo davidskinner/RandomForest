@@ -19,19 +19,25 @@ abstract class SupervisedLearner
 	{
 		if(features.rows() != labels.rows())
 			throw new IllegalArgumentException("Mismatching number of rows");
-		double[] pred = new double[labels.cols()];
-		int mis = 0;
+
+		double[] predictions = new double[labels.cols()];
+		int misclassifications = 0;
+
 		for(int i = 0; i < features.rows(); i++)
 		{
 			double[] feat = features.row(i);
-			predict(feat, pred);
+			predict(feat, predictions);
 			double[] lab = labels.row(i);
+
 			for(int j = 0; j < lab.length; j++)
 			{
-				if(pred[j] != lab[j])
-					mis++;
+				//check if the trained set got the right value
+				if(predictions[j] != lab[j])
+				{
+					misclassifications++;
+				}
 			}
 		}
-		return mis;
+		return misclassifications;
 	}
 }
