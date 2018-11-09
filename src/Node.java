@@ -16,10 +16,6 @@ abstract class Node
 
 class InteriorNode extends Node
 {
-	int attribute; // which attribute to divide on
-	double pivot; // which value to divide on
-	Node a;
-	Node b;
 
 	InteriorNode(Node a, Node b, int attribute, double pivot)
 	{
@@ -71,7 +67,7 @@ class LeafNode extends Node
 
 class DecisionTree extends SupervisedLearner
 {
-	static Random rand = new Random(52);
+	static Random rand = new Random(14);
 	Node root;
 	Matrix DecisionFeature = new Matrix();
 
@@ -118,6 +114,7 @@ class DecisionTree extends SupervisedLearner
 
 		for (int patience = 12; patience > 0; patience--)
 		{
+			//			Main.log(Integer.toString(patience));
 			column = pickDividingColumn(ftrs);
 			pivot = pickPivotRow(ftrs, column);
 
@@ -140,46 +137,50 @@ class DecisionTree extends SupervisedLearner
 
 			while (featTemp.rows() != 0)
 			{
-//				Main.log(Integer.toString(featTemp.rows()));
+				//				Main.log(Integer.toString(featuresA.rows());
+				//				Main.log(Integer.toString(featuresA.rows()));
 				//if the data is continuous
 				if (codeValue == 0)
 				{
-					if (ftrs.row(zerothPosition)[column] < pivot)
+					if (featTemp.row(zerothPosition)[column] < pivot)
 					{
 						featuresA.takeRow(featTemp.removeRow(zerothPosition));
 						labelsA.takeRow(labTemp.removeRow(zerothPosition));
 
-//						Vec.copy(featuresA.newRow(), featTemp.row(zerothPosition));
-//						Vec.copy(labelsA.newRow(), labTemp.row(zerothPosition));
+						//						Vec.copy(featuresA.newRow(), featTemp.row(zerothPosition));
+						//						Vec.copy(labelsA.newRow(), labTemp.row(zerothPosition));
 
 					} else
 					{
+
 						featuresB.takeRow(featTemp.removeRow(zerothPosition));
 						labelsB.takeRow(labTemp.removeRow(zerothPosition));
 
-//						Vec.copy(featuresB.newRow(), featTemp.row(zerothPosition));
-//						Vec.copy(labelsB.newRow(), labTemp.row(zerothPosition));
+						//						Vec.copy(featuresB.newRow(), featTemp.row(zerothPosition));
+						//						Vec.copy(labelsB.newRow(), labTemp.row(zerothPosition));
 					}
 				} else //if the data is categorical
 				{
-					if (ftrs.row(zerothPosition)[column] == pivot)
+					if (featTemp.row(zerothPosition)[column] == pivot)
 					{
 						featuresA.takeRow(featTemp.removeRow(zerothPosition));
 						labelsA.takeRow(labTemp.removeRow(zerothPosition));
 
-//						Vec.copy(featuresA.newRow(), featTemp.row(zerothPosition));
-//						Vec.copy(labelsA.newRow(), labTemp.row(zerothPosition));
+						//						Vec.copy(featuresA.newRow(), featTemp.row(zerothPosition));
+						//						Vec.copy(labelsA.newRow(), labTemp.row(zerothPosition));
 					} else
 					{
 						featuresB.takeRow(featTemp.removeRow(zerothPosition));
 						labelsB.takeRow(labTemp.removeRow(zerothPosition));
 
-//						Vec.copy(featuresB.newRow(), featTemp.row(zerothPosition));
-//						Vec.copy(labelsB.newRow(), labTemp.row(zerothPosition));
+						//						Vec.copy(featuresB.newRow(), featTemp.row(zerothPosition));
+						//						Vec.copy(labelsB.newRow(), labTemp.row(zerothPosition));
 					}
 				}
 			}
 
+			//			Main.log(Integer.toString(featuresA.rows()));
+			//			Main.log(Integer.toString(featuresB.rows()));
 			if (featuresA.rows() != 0 && featuresB.rows() != 0)
 				break;
 		}
@@ -211,23 +212,25 @@ class DecisionTree extends SupervisedLearner
 			//if n is not a leaf node then branch
 			if (!n.isLeaf())
 			{
+				InteriorNode something = (InteriorNode) n;
+
 				if (DecisionFeature.valueCount(n.attribute) == 0)
 				{
 					//if  continuous
-					if (in[n.attribute] < n.pivot)
+					if (in[something.attribute] < something.pivot)
 					{
-						n = n.a;
+						n = something.a;
 
 					} else
-						n = n.b;
+						n = something.b;
 				} else // if categorical
 				{
 					if (in[n.attribute] == n.pivot)
 					{
-						n = n.a;
+						n = something.a;
 
 					} else
-						n = n.b;
+						n = something.b;
 				}
 
 			} else
