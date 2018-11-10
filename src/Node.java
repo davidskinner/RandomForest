@@ -1,6 +1,6 @@
 import java.util.Random;
 
-abstract class Node
+ abstract class Node
 {
 	int attribute; // which attribute to divide on
 	double pivot; // which value to divide on
@@ -137,8 +137,6 @@ class DecisionTree extends SupervisedLearner
 
 			while (featTemp.rows() != 0)
 			{
-				//				Main.log(Integer.toString(featuresA.rows());
-				//				Main.log(Integer.toString(featuresA.rows()));
 				//if the data is continuous
 				if (codeValue == 0)
 				{
@@ -146,18 +144,11 @@ class DecisionTree extends SupervisedLearner
 					{
 						featuresA.takeRow(featTemp.removeRow(zerothPosition));
 						labelsA.takeRow(labTemp.removeRow(zerothPosition));
-
-						//						Vec.copy(featuresA.newRow(), featTemp.row(zerothPosition));
-						//						Vec.copy(labelsA.newRow(), labTemp.row(zerothPosition));
-
 					} else
 					{
 
 						featuresB.takeRow(featTemp.removeRow(zerothPosition));
 						labelsB.takeRow(labTemp.removeRow(zerothPosition));
-
-						//						Vec.copy(featuresB.newRow(), featTemp.row(zerothPosition));
-						//						Vec.copy(labelsB.newRow(), labTemp.row(zerothPosition));
 					}
 				} else //if the data is categorical
 				{
@@ -165,22 +156,13 @@ class DecisionTree extends SupervisedLearner
 					{
 						featuresA.takeRow(featTemp.removeRow(zerothPosition));
 						labelsA.takeRow(labTemp.removeRow(zerothPosition));
-
-						//						Vec.copy(featuresA.newRow(), featTemp.row(zerothPosition));
-						//						Vec.copy(labelsA.newRow(), labTemp.row(zerothPosition));
 					} else
 					{
 						featuresB.takeRow(featTemp.removeRow(zerothPosition));
 						labelsB.takeRow(labTemp.removeRow(zerothPosition));
-
-						//						Vec.copy(featuresB.newRow(), featTemp.row(zerothPosition));
-						//						Vec.copy(labelsB.newRow(), labTemp.row(zerothPosition));
 					}
 				}
 			}
-
-			//			Main.log(Integer.toString(featuresA.rows()));
-			//			Main.log(Integer.toString(featuresB.rows()));
 			if (featuresA.rows() != 0 && featuresB.rows() != 0)
 				break;
 		}

@@ -1,118 +1,143 @@
+import java.util.ArrayList;
 import java.util.Random;
 
 public class RandomForest extends SupervisedLearner
 {
+	DecisionTree[] decisionTreeArray;
 	Node root;
 	Matrix DecisionFeature = new Matrix();
-	static Random rand = new Random((long)22.0);
+	static Random rand = new Random();
+//	int decisionTrees;
+
+	//put tree results in here
+	Matrix treeMatrix = new Matrix();
+
 
 	RandomForest(int decisionTrees)
 	{
-		//resample data before training
-		//increase patience
-		//increase size of ensemble
-
-
-//		for (int i = 0; i < decisionTrees; i++)
-//		{
-//			newdata = resambple(data);
-//		}
+		this.decisionTreeArray = new DecisionTree[decisionTrees];
 	}
 
-
-
-	void train(Matrix feat, Matrix lab)
+	void train(Matrix ftrs, Matrix lbls)
 	{
-//		root = plantForest(feat, lab);
+		DecisionFeature = new Matrix(ftrs);
+		root = plantForest(ftrs, lbls);
 	}
 
-	String name()
+	int pickDividingColumn(Matrix feat)
 	{
-		return "RandomForest";
+		//pick a random column to divide on
+		return rand.nextInt(feat.cols());
 	}
 
-//	Node plantForest(Matrix feat, Matrix lab)
-//	{
-//		DecisionFeature = new Matrix(feat);
-//
-//		if (feat.rows() != lab.rows())
-//			throw new RuntimeException("mismatching features and labels");
-//
-//		Matrix feat_a = new Matrix();
-//		Matrix feat_b = new Matrix();
-//		Matrix lab_a = new Matrix();
-//		Matrix lab_b = new Matrix();
-//
-//		Matrix featTemp = new Matrix(feat);
-//		Matrix labCopy = new Matrix(lab);
-//
-//		int col = 0;
-//		double pivot = 0;
-//
-//		for (int patience = 8; patience > 0; patience--)
-//		{
-//			col = pickDividingColumn(feat);
-//			pivot = pickPivotRow(feat, col);
-//
-//			int codeValue = feat.valueCount(col);
-//
-//			feat_a = new Matrix(feat);
-//			feat_b = new Matrix(feat);
-//			lab_a = new Matrix(lab);
-//			lab_b = new Matrix(lab);
-//
-//			feat_a.copyMetaData(feat);
-//			feat_b.copyMetaData(feat);
-//			lab_a.copyMetaData(lab);
-//			lab_b.copyMetaData(lab);
-//
-//			featTemp.copy(feat);
-//			labCopy.copy(lab);
-//
-//			int firstPosition = 0;
-//			while(featTemp.rows() !=0)
-//			{
-//				//if the data is continuous
-//				if (codeValue == 0)
-//				{
-//					if (feat.row(firstPosition)[col] < pivot)
-//					{
-//
-//						feat_a.takeRow(featTemp.removeRow(firstPosition));
-//						lab_a.takeRow(labCopy.removeRow(firstPosition));
-//					} else
-//					{
-//						feat_b.takeRow(featTemp.removeRow(firstPosition));
-//						lab_b.takeRow(labCopy.removeRow(firstPosition));
-//					}
-//				} else //if the data is categorical
-//				{
-//					if (feat.row(firstPosition)[col] == pivot)
-//					{
-//						feat_a.takeRow(featTemp.removeRow(firstPosition));
-//						lab_a.takeRow(labCopy.removeRow(firstPosition));
-//					} else
-//					{
-//						feat_b.takeRow(featTemp.removeRow(firstPosition));
-//						lab_b.takeRow(labCopy.removeRow(firstPosition));
-//					}
-//				}
-//			}
-//
-//			if (feat_a.rows() != 0 && feat_b.rows() != 0)
-//				break;
-//		}
-//
-//		if (feat_a.rows() == 0 || feat_b.rows() == 0)
-//		{
-//			return new LeafNode(lab);
-//		}
-//
+	double pickPivotRow(Matrix feat, int col)
+	{
+		//pick a random row to divide on
+		int row = rand.nextInt(feat.rows());
+		return feat.row(row)[col];
+	}
+
+	Node plantForest(Matrix feat, Matrix lab)
+	{
+		//resample the data before building tree
+		Matrix featureBag = new Matrix();
+		featureBag.copyMetaData(feat);
+
+		Matrix labelBag = new Matrix();
+		labelBag.copyMetaData(lab);
+
+		//make a bag
+		for (int i = 0; i < feat.rows(); i++)
+		{
+			int takeRandom = rand.nextInt(feat.rows());
+
+			featureBag.takeRow(feat.row(takeRandom));
+			labelBag.takeRow(lab.row(takeRandom));
+		}
+
+		//for each bag, build a decision tree on the bag
+	//take most common or average value for each attribute from each tree
+
+		DecisionFeature = new Matrix(featureBag);
+
+		if (featureBag.rows() != labelBag.rows())
+			throw new RuntimeException("mismatching features and labels");
+
+		Matrix feat_a = new Matrix();
+		Matrix feat_b = new Matrix();
+		Matrix lab_a = new Matrix();
+		Matrix lab_b = new Matrix();
+
+		Matrix featTemp = new Matrix(featureBag);
+		Matrix labCopy = new Matrix(labelBag);
+
+		int col = 0;
+		double pivot = 0;
+
+		for (int patience = 12; patience > 0; patience--)
+		{
+			col = pickDividingColumn(featureBag);
+			pivot = pickPivotRow(featureBag, col);
+
+			int codeValue = featureBag.valueCount(col);
+
+			feat_a = new Matrix(featureBag);
+			feat_b = new Matrix(featureBag);
+			lab_a = new Matrix(labelBag);
+			lab_b = new Matrix(labelBag);
+
+			feat_a.copyMetaData(featureBag);
+			feat_b.copyMetaData(featureBag);
+			lab_a.copyMetaData(labelBag);
+			lab_b.copyMetaData(labelBag);
+
+			featTemp.copy(featureBag);
+			labCopy.copy(labelBag);
+
+			int firstPosition = 0;
+			while(featTemp.rows() !=0)
+			{
+				//if the data is continuous
+				if (codeValue == 0)
+				{
+					if (featTemp.row(firstPosition)[col] < pivot)
+					{
+
+						feat_a.takeRow(featTemp.removeRow(firstPosition));
+						lab_a.takeRow(labCopy.removeRow(firstPosition));
+					} else
+					{
+						feat_b.takeRow(featTemp.removeRow(firstPosition));
+						lab_b.takeRow(labCopy.removeRow(firstPosition));
+					}
+				} else //if the data is categorical
+				{
+					if (featTemp.row(firstPosition)[col] == pivot)
+					{
+						feat_a.takeRow(featTemp.removeRow(firstPosition));
+						lab_a.takeRow(labCopy.removeRow(firstPosition));
+					} else
+					{
+						feat_b.takeRow(featTemp.removeRow(firstPosition));
+						lab_b.takeRow(labCopy.removeRow(firstPosition));
+					}
+				}
+			}
+
+			if (feat_a.rows() != 0 && feat_b.rows() != 0)
+				break;
+		}
+
+		if (feat_a.rows() == 0 || feat_b.rows() == 0)
+		{
+			return new LeafNode(labelBag);
+		}
+
 //		//make the node
-//		Node a = build_tree(feat_a, lab_a);
-//		Node b = build_tree(feat_b, lab_b);
-//		return new InteriorNode(a, b, col, pivot);
-//	}
+		Node a = plantForest(feat_a, lab_a);
+		Node b = plantForest(feat_b, lab_b);
+		return new InteriorNode(a, b, col, pivot);
+	}
 
 
 	void predict(double[] in, double[] out)
@@ -124,27 +149,30 @@ public class RandomForest extends SupervisedLearner
 			//if n is not a leaf node then branch
 			if (!n.isLeaf())
 			{
+				InteriorNode something = (InteriorNode) n;
+
 				if (DecisionFeature.valueCount(n.attribute) == 0)
 				{
 					//if  continuous
-					if (in[n.attribute] < n.pivot)
+					if (in[something.attribute] < something.pivot)
 					{
-						n = n.a;
+						n = something.a;
 
 					} else
-						n = n.b;
+						n = something.b;
 				} else // if categorical
 				{
 					if (in[n.attribute] == n.pivot)
 					{
-						n = n.a;
+						n = something.a;
 
 					} else
-						n = n.b;
+						n = something.b;
 				}
 
 			} else
 			{
+				//
 				for (int i = 0; i < n.getLabel().length; i++)
 				{
 					out[i] = n.getLabel()[i];
@@ -153,7 +181,11 @@ public class RandomForest extends SupervisedLearner
 				break;
 			}
 		}
+	}
 
+	String name()
+	{
+		return "RandomForest";
 	}
 
 }

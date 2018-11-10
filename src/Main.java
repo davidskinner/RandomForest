@@ -51,7 +51,7 @@ public class Main
 	{
 		testLearner(new BaselineLearner());
 		testLearner(new DecisionTree());
-		//testLearner(new RandomForest(50);
+		testLearner(new RandomForest(30));
 
 	}
 }
